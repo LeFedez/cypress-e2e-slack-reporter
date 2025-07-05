@@ -27,7 +27,7 @@ inputs:
   slack-icon:
     description: 'La URL de una imagen para el icono del bot en Slack. Para que tu bot tenga una cara.'
     required: false
-    default: 'https://pbs.twimg.com/profile_images/1512090708181725184/KAPAXmDg_400x400.jpg'
+    default: 'https://drive.google.com/file/d/1FE6DMUhnD3Pwa2xJBSHDBqE1lm3Enrvn/view?usp=sharing'
   slack-title:
     description: 'El título principal del mensaje de Slack. Aparecerá en grande en la notificación.'
     required: false

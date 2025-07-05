@@ -2,50 +2,35 @@
 name: Probar Mi Acción de Cypress
 
 # Cuándo se ejecutará esta pista de pruebas.
-# En este caso, cuando hagas un 'push' (subir cambios) a la rama 'main'
-# o cuando hagas un 'pull_request' (pedir que se unan tus cambios) a la rama 'main'.
-# También puedes añadir 'workflow_dispatch:' para ejecutarlo manualmente desde GitHub.
+# ¡La indentación es CRUCIAL aquí!
 on:
-  push:                  # <-- ¡Añade 2 espacios aquí!
+  push:
     branches:
       - main
-  pull_request:          # <-- ¡Añade 2 espacios aquí!
+  pull_request:
     branches:
       - main
-  workflow_dispatch:     # <-- ¡Añade 2 espacios aquí!
-    # No necesita ramas aquí, ya que se ejecuta a demanda.
+  workflow_dispatch: # Permite ejecutar el workflow manualmente desde la interfaz de GitHub
 
 jobs:
-  # Definimos un "trabajo" (job) llamado 'test-action'.
   test-action:
-    # Este trabajo se ejecutará en un servidor de Ubuntu.
     runs-on: ubuntu-latest
 
-    # Los pasos que realizará este trabajo.
     steps:
-      # Paso 1: "Preparar el escenario". Descargar el código de tu repositorio.
-      # ¡IMPORTANTE! Si tu acción depende de archivos en tu propio repositorio (como archivos de pruebas Cypress),
-      # necesitas este paso para que tu acción tenga acceso a ellos.
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Paso 2: "¡Probar mi juguete! (Ejecutar tu acción)".
-      # Aquí es donde llamas a tu propia acción.
-      # 'uses: ./': Esto significa "usa la acción que está en este mismo repositorio, en la carpeta actual".
-      # Esto es crucial para probarla localmente antes de publicarla en el Marketplace.
       - name: Run My Cypress Action
-        uses: ./ # Esto le dice a GitHub que use la acción definida en 'action.yml' en la raíz de ESTE repositorio.
+        # ¡IMPORTANTE! 'uses: ./' le dice a GitHub que use la acción definida en action.yml
+        # en la raíz de ESTE repositorio (el repositorio de la acción en sí).
+        uses: ./ 
         with:
-          # Aquí pasas los valores a los "botones" (inputs) de tu acción,
-          # igual que lo haría otro usuario.
-          #
           # ¡MUY IMPORTANTE! El slack-webhook debe ser un SECRETO.
-          # No pegues el valor directo aquí.
-          slack-webhook: ${{ secrets.TEST_SLACK_WEBHOOK }} # <-- ¡Necesitarás crear este secreto!
-          #
+          # No pegues el valor directo aquí. Lo crearemos en el paso 6.
+          slack-webhook: ${{ secrets.TEST_SLACK_WEBHOOK }} 
           # Puedes personalizar otros inputs si quieres probarlos:
           # node-version: '20'
-          # cypress-command: 'npx cypress run --spec "cypress/e2e/my_test_spec.cy.js"' # Si quieres probar un test específico
+          # cypress-command: 'npx cypress run --browser chrome' 
           # slack-username: 'TestBot'
           # slack-title: 'Resultados de Prueba de la Acción'
-          # continue-on-cypress-error: 'false' # Para ver si se detiene al fallar las pruebas
+          # continue-on-cypress-error: 'false'
