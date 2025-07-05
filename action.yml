@@ -53,7 +53,7 @@ runs:
       # Aquí, tu acción asume que tienes un 'package.json' y un 'package-lock.json'
       # en el repositorio donde se usa la acción.
       # Para la prueba, necesitas esto en TU repositorio de acción también.
-      run: |
+      run: npm install
         # Si NO tienes un archivo package.json para tu acción (solo para el proyecto que la usa):
         # Puedes remover esta línea si tu acción no tiene dependencias npm propias.
         # PERO, para la ejecución de Cypress, *el proyecto donde se usa la acción* DEBE tener un package.json
