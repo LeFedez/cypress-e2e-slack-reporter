@@ -1,0 +1,18 @@
+{
+  "name": "cypress-action-test-project",
+  "version": "1.0.0",
+  "description": "Un pequeño proyecto para probar la GitHub Action de Cypress.",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
+  },
+  "keywords": [],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "^13.0.0",
+    "mochawesome": "^7.1.3",
+    "mochawesome-report-generator": "^6.2.0"
+  }
+}
