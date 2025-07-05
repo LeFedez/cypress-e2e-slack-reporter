@@ -1,0 +1,105 @@
+# your-cypress-regression-action/action.yml
+name: 'Cypress E2E Tests with Slack Notification'
+description: 'Ejecuta pruebas Cypress E2E, genera reportes Mochawesome y notifica los resultados detallados a Slack.'
+author: 'LeFedez'
+
+branding:
+  icon: 'bell' 
+  color: 'blue'      
+
+
+inputs:
+  node-version:
+    description: 'La versión de Node.js a usar para ejecutar las pruebas Cypress. Por ejemplo: "18" o "20".'
+    required: false 
+    default: '18'   
+
+  cypress-command:
+    description: 'El comando completo para ejecutar Cypress. Útil para personalizar opciones como grabar o usar un navegador específico. Por defecto, incluye Mochawesome.'
+    required: false
+    default: 'npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=true,json=true'
+
+  slack-webhook:
+    description: '¡Muy importante! El secreto para tu URL del Webhook de Slack. Necesitas guardarlo en tus Secretos de GitHub.'
+    required: true 
+
+  slack-username:
+    description: 'El nombre que aparecerá en la notificación de Slack. Como si tu bot tuviera un nombre.'
+    required: false
+    default: 'Cy-Notification' 
+
+  slack-icon:
+    description: 'La URL de una imagen para el icono del bot en Slack. Para que tu bot tenga una cara.'
+    required: false
+    default: 'https://drive.google.com/file/d/1FE6DMUhnD3Pwa2xJBSHDBqE1lm3Enrvn/view?usp=sharing' # Un icono de Cypress.
+
+  slack-title:
+    description: 'El título principal del mensaje de Slack. Aparecerá en grande en la notificación.'
+    required: false
+    default: 'Cypress E2E Test Results' # título por defecto.
+
+  continue-on-cypress-error:
+    description: 'Si es "true", la acción seguirá ejecutándose (y enviará la notificación a Slack) incluso si las pruebas de Cypress fallan. Si es "false", la acción se detendrá si fallan.'
+    required: false
+    default: 'true' # Por defecto, queremos que siempre envíe la notificación, incluso si fallan las pruebas.
+
+
+runs:
+  using: "composite" 
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3 
+    - name: Setup Node.js Environment
+      uses: actions/setup-node@v4 
+      with:
+        node-version: ${{ inputs.node-version }} 
+    - name: Install Project Dependencies
+      shell: bash 
+      run: npm ci 
+    - name: Run Cypress Tests with Mochawesome
+      shell: bash
+      run: ${{ inputs.cypress-command }} 
+      continue-on-error: ${{ fromJSON(inputs.continue-on-cypress-error) }
+    - name: Extract Test Summary
+      if: always() 
+      shell: bash
+      run: |
+        RESULTS_FILE="cypress/results/mochawesome.json"
+        
+        # Si no encontramos el archivo de resultados (quizás algo salió muy mal), ponemos 0.
+        if [ ! -f "$RESULTS_FILE" ]; then
+          echo "WARNING: Mochawesome results file '$RESULTS_FILE' not found. Defaulting test counts to 0."
+          echo "PASSED_TESTS=0" >> $GITHUB_ENV
+          echo "FAILED_TESTS=0" >> $GITHUB_ENV
+          echo "SKIPPED_TESTS=0" >> $GITHUB_ENV
+          echo "TOTAL_TESTS=0" >> $GITHUB_ENV
+          echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV # Rojo si no hay resultados.
+        else
+          # Si encontramos el archivo, usamos 'jq' para leer los números de las pruebas.
+          echo "PASSED_TESTS=$(jq '.stats.passes' "$RESULTS_FILE")" >> $GITHUB_ENV
+          echo "FAILED_TESTS=$(jq '.stats.failures' "$RESULTS_FILE")" >> $GITHUB_ENV
+          echo "SKIPPED_TESTS=$(jq '.stats.skipped' "$RESULTS_FILE")" >> $GITHUB_ENV
+          echo "TOTAL_TESTS=$(jq '.stats.tests' "$RESULTS_FILE")" >> "$GITHUB_ENV"
+
+          # Decidimos el color de la notificación de Slack: rojo si hay fallos, verde si todo bien.
+          if [ "$(jq '.stats.failures' "$RESULTS_FILE")" -gt 0 ]; then
+            echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV
+          else
+            echo "SLACK_DYNAMIC_COLOR=good" >> $GITHUB_ENV
+          fi
+        fi
+    - name: Send Slack Notification
+      if: always()
+      uses: rtCamp/action-slack-notify@v2 
+      env: 
+        SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} 
+        SLACK_USERNAME: ${{ inputs.slack-username }} 
+        SLACK_ICON: ${{ inputs.slack-icon }} 
+        SLACK_MESSAGE: | 
+          *Resultados de Pruebas Cypress* para el commit `<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>` en la rama `${{ github.ref_name }}`
+          
+          📊 Total: ${{ env.TOTAL_TESTS }} | ✅ Pasadas: ${{ env.PASSED_TESTS }} | ❌ Fallidas: ${{ env.FAILED_TESTS }} | ⚪️ Saltadas: ${{ env.SKIPPED_TESTS }}
+          
+          🔗 Ver workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        SLACK_TITLE: ${{ inputs.slack-title }} 
+        SLACK_WEBHOOK: ${{ inputs.slack-webhook }} 
