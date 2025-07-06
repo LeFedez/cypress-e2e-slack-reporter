@@ -1,172 +1,148 @@
 # action.yml
-# This file defines your GitHub Action.
-# Make sure the first line 'name:' starts in column 1 (no leading spaces).
+# Este archivo define tu GitHub Action.
+# Asegúrate de que la primera línea 'name:' comience en la columna 1 (sin espacios al inicio).
 
 name: 'Cypress E2E Regression Tests with Slack Notification'
 description: 'Ejecuta pruebas Cypress E2E, genera reportes Mochawesome y notifica los resultados detallados a Slack.'
-author: 'Tu Nombre / Tu Organización' # <-- IMPORTANT: Change this to your GitHub username or organization name.
+author: 'Tu Nombre / Tu Organización' # <-- IMPORTANTE: Cambia esto a tu nombre de usuario de GitHub o nombre de tu organización.
 
-# The 'branding' section defines how your action looks in the GitHub Marketplace.
-# You can choose from Octicons for the 'icon' and specific colors.
-# See more Octicons here: https://octicons.github.com/
+# La sección 'branding' define cómo se ve tu acción en el GitHub Marketplace.
+# Puedes elegir iconos de Octicons y colores específicos.
+# Más iconos de Octicons aquí: https://octicons.github.com/
 branding:
-  icon: 'bell'      # Recommended icon for notifications (e.g., 'bell', 'paper-airplane', 'megaphone')
-  color: 'blue'     # Recommended color for notifications (e.g., 'blue', 'green', 'red', 'yellow', 'purple', 'orange', 'gray', 'white')
+  icon: 'bell'      # Icono recomendado para notificaciones (ej: 'bell', 'paper-airplane', 'megaphone')
+  color: 'blue'     # Color recomendado para notificaciones (ej: 'blue', 'green', 'red', 'yellow', 'purple', 'orange', 'gray', 'white')
 
-# The 'inputs' section defines the parameters that users can provide when using your action.
-# Each input has a description, a 'required' status, and an optional 'default' value.
+# La sección 'inputs' define los parámetros que los usuarios pueden proporcionar al usar tu acción.
+# Cada input tiene una descripción, un estado 'required' (requerido), y un valor 'default' (por defecto) opcional.
 inputs:
   node-version:
     description: 'La versión de Node.js a usar para ejecutar las pruebas Cypress. Ej: "18" o "20".'
-    required: false # This input is optional
-    default: '18'   # Default Node.js version if not specified by the user
+    required: false # Este input es opcional
+    default: '18'   # Versión de Node.js por defecto si no es especificada por el usuario
 
   cypress-command:
     description: 'El comando completo para ejecutar Cypress. Útil para personalizar opciones como grabar o usar un navegador específico.'
-    required: false # This input is optional
-    default: 'npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=true,json=true' # Default Cypress command
+    required: false # Este input es opcional
+    default: 'npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=true,json=true' # Comando Cypress por defecto
 
   slack-webhook:
     description: '¡Muy importante! El secreto para tu URL del Webhook de Slack. Debes guardarlo en los Secretos de GitHub del repositorio que use esta acción.'
-    required: true # This input is MANDATORY. The action cannot send Slack notifications without it.
+    required: true # Este input es OBLIGATORIO. La acción no puede enviar notificaciones de Slack sin él.
 
   slack-username:
     description: 'El nombre del bot que aparecerá en la notificación de Slack.'
-    required: false # This input is optional
-    default: 'CyBot' # Default username for the Slack bot
+    required: false # Este input es opcional
+    default: 'CyBot' # Nombre de usuario por defecto para el bot de Slack
 
   slack-icon:
     description: 'La URL de una imagen para el icono del bot en Slack. Esta imagen aparecerá en la notificación de Slack.'
-    required: false # This input is optional
-    default: 'https://pbs.twimg.com/profile_images/1512090708181725184/KAPAXmDg_400x400.jpg' # Default icon for the Slack bot (Cypress logo)
-    # You can change this to your preferred public image URL, e.g., 'https://github.com/your-username.png'
+    required: false # Este input es opcional
+    default: 'https://pbs.twimg.com/profile_images/1512090708181725184/KAPAXmDg_400x400.jpg' # Icono por defecto para el bot de Slack (logo de Cypress)
+    # Puedes cambiar esto a la URL pública de tu imagen preferida, ej: 'https://github.com/tu-usuario.png'
 
   slack-title:
     description: 'El título principal del mensaje de Slack. Aparecerá en grande en la notificación.'
-    required: false # This input is optional
-    default: 'Cypress E2E Test Results' # Default title for the Slack notification
+    required: false # Este input es opcional
+    default: 'Cypress E2E Test Results' # Título por defecto para la notificación de Slack
 
   continue-on-cypress-error:
     description: 'Si es "true", la acción seguirá ejecutándose (y enviará la notificación a Slack) incluso si las pruebas de Cypress fallan. Si es "false", la acción se detendrá si fallan.'
-    required: false # This input is optional
-    default: 'true' # Default behavior: always send Slack notification, even if tests fail.
+    required: false # Este input es opcional
+    default: 'true' # Comportamiento por defecto: siempre enviar notificación de Slack, incluso si las pruebas fallan.
 
-# The 'runs' section defines how your action is executed.
-# 'composite' means your action consists of multiple shell commands and other actions.
+# La sección 'runs' define cómo se ejecuta tu acción.
+# 'composite' significa que tu acción consiste en múltiples comandos de shell y otras acciones.
 runs:
-  using: "composite" # Indicates this is a composite action, running a sequence of steps.
+  using: "composite" # Indica que es una acción compuesta, ejecutando una secuencia de pasos.
   steps:
-    # Step 1: Checks out the repository's code. This is essential for the action
-    # to access your Cypress test files and package.json.
+    # Paso 1: Descarga el código del repositorio. Esto es esencial para que la acción
+    # acceda a tus archivos de prueba de Cypress y package.json.
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # Step 2: Sets up the Node.js environment with the specified version.
+    # Paso 2: Configura el entorno de Node.js con la versión especificada.
     - name: Setup Node.js Environment
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ inputs.node-version }} # Uses the 'node-version' input provided by the user.
+        node-version: ${{ inputs.node-version }} # Usa el input 'node-version' proporcionado por el usuario.
 
-    # Step 3: Installs project dependencies (Cypress, Mochawesome, etc.).
-    # This step assumes a 'package.json' and 'package-lock.json' (or 'npm-shrinkwrap.json')
-    # exist in the repository where this action is being used (and also in THIS action's repo for testing).
+    # Paso 3: Instala las dependencias del proyecto (Cypress, Mochawesome, etc.).
+    # Este paso asume que un 'package.json' y un 'package-lock.json' (o 'npm-shrinkwrap.json')
+    # existen en el repositorio donde se está usando esta acción (y también en el repositorio de ESTA acción para pruebas).
     - name: Install Project Dependencies
-      shell: bash # Executes the command using bash shell
-      run: npm install # 'npm ci' requires a package-lock.json for consistent installs.
+      shell: bash # Ejecuta el comando usando bash shell
+      run: npm ci # 'npm ci' requiere un package-lock.json para instalaciones consistentes.
 
-    # Step 4: Runs the Cypress tests using the provided command.
-    # 'continue-on-error' ensures the workflow proceeds even if Cypress tests fail,
-    # so the Slack notification can still be sent.
+    # Paso 4: Ejecuta las pruebas de Cypress usando el comando proporcionado.
+    # 'continue-on-error' asegura que el flujo de trabajo continúe incluso si las pruebas de Cypress fallan,
+    # para que la notificación de Slack pueda ser enviada de todas formas.
     - name: Run Cypress Tests with Mochawesome
       shell: bash
-      run: ${{ inputs.cypress-command }} # Uses the 'cypress-command' input.
-      continue-on-error: ${{ fromJSON(inputs.continue-on-cypress-error) }} # Converts the string input to a boolean.
+      run: ${{ inputs.cypress-command }} # Usa el input 'cypress-command'.
+      continue-on-error: ${{ fromJSON(inputs.continue-on-cypress-error) }} # Convierte el input de cadena a booleano.
 
-    # Step 5: Extracts test summary (passes, failures, skipped) from the Mochawesome report.
-    # This step runs 'always()' to ensure the Slack notification can be sent even if tests fail or the previous step had an error.
+    # Paso 5: Extrae el resumen de las pruebas (pasadas, fallidas, saltadas) del reporte de Mochawesome.
+    # Este paso se ejecuta 'always()' para asegurar que la notificación de Slack pueda enviarse incluso si las pruebas fallan o el paso anterior tuvo un error.
     - name: Extract Test Summary
-      if: always() # Ensures this step runs regardless of previous step's outcome.
+      if: always() # Asegura que este paso se ejecute sin importar el resultado del paso anterior.
       shell: bash
       run: |
-        # Install 'jq' (JSON processor) as it might not be pre-installed on all runners.
-        # This ensures the script can parse the Mochawesome JSON report.
+        # Instala 'jq' (procesador de JSON) ya que podría no estar preinstalado en todos los runners.
+        # Esto asegura que el script pueda parsear el reporte JSON de Mochawesome.
         sudo apt-get update && sudo apt-get install -y jq
 
         RESULTS_FILE="cypress/results/mochawesome.json"
         
-        # Check if the Mochawesome report file exists. If not, default counts to 0 and set color to danger.
+        # Verifica si el archivo de reporte de Mochawesome existe. Si no, las cuentas por defecto serán 0 y el color será rojo.
         if [ ! -f "$RESULTS_FILE" ]; then
           echo "WARNING: Mochawesome results file '$RESULTS_FILE' not found. Defaulting test counts to 0."
           echo "PASSED_TESTS=0" >> $GITHUB_ENV
           echo "FAILED_TESTS=0" >> $GITHUB_ENV
           echo "SKIPPED_TESTS=0" >> $GITHUB_ENV
+          echo "PENDING_TESTS=0" >> $GITHUB_ENV 
           echo "TOTAL_TESTS=0" >> $GITHUB_ENV
-          echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV # Set color to red if no results found
+          echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV # Establece el color a rojo si no se encuentran resultados
         else
-          # Parse the Mochawesome JSON report to get test statistics.
+          # Parsea el reporte JSON de Mochawesome para obtener las estadísticas de las pruebas.
           echo "PASSED_TESTS=$(jq '.stats.passes' "$RESULTS_FILE")" >> $GITHUB_ENV
           echo "FAILED_TESTS=$(jq '.stats.failures' "$RESULTS_FILE")" >> $GITHUB_ENV
           echo "SKIPPED_TESTS=$(jq '.stats.skipped' "$RESULTS_FILE")" >> $GITHUB_ENV
+          echo "PENDING_TESTS=$(jq '.stats.pending' "$RESULTS_FILE")" >> $GITHUB_ENV
           echo "TOTAL_TESTS=$(jq '.stats.tests' "$RESULTS_FILE")" >> "$GITHUB_ENV"
 
-          # Determine the Slack notification color based on test failures.
+          # Determina el color de la notificación de Slack basándose en los fallos de las pruebas.
           if [ "$(jq '.stats.failures' "$RESULTS_FILE")" -gt 0 ]; then
-            echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV # Red for failures
+            echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV # Rojo para fallos
           else
-            echo "SLACK_DYNAMIC_COLOR=good" >> $GITHUB_ENV  # Green for success
+            echo "SLACK_DYNAMIC_COLOR=good" >> $GITHUB_ENV  # Verde para éxito
           fi
         fi
 
-    # Step 6: Sends the test results summary to Slack.
-    # This step also runs 'always()' to ensure the notification is sent regardless of test outcomes.
-# ... (código anterior en action.yml) ...
-
-    - name: Extract Test Summary
-      if: always() # Ensures this step runs regardless of previous step's outcome.
-      shell: bash
-      run: |
-        sudo apt-get update && sudo apt-get install -y jq
-
-        RESULTS_FILE="cypress/results/mochawesome.json"
-        
-        if [ ! -f "$RESULTS_FILE" ]; then
-          echo "WARNING: Mochawesome results file '$RESULTS_FILE' not found. Defaulting test counts to 0."
-          echo "PASSED_TESTS=0" >> $GITHUB_ENV
-          echo "FAILED_TESTS=0" >> $GITHUB_ENV
-          echo "SKIPPED_TESTS=0" >> $GITHUB_ENV
-          echo "PENDING_TESTS=0" >> $GITHUB_ENV # <--- NUEVA LÍNEA: Añadimos PENDING_TESTS
-          echo "TOTAL_TESTS=0" >> $GITHUB_ENV
-          echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV
-        else
-          echo "PASSED_TESTS=$(jq '.stats.passes' "$RESULTS_FILE")" >> $GITHUB_ENV
-          echo "FAILED_TESTS=$(jq '.stats.failures' "$RESULTS_FILE")" >> $GITHUB_ENV
-          echo "SKIPPED_TESTS=$(jq '.stats.skipped' "$RESULTS_FILE")" >> $GITHUB_ENV
-          echo "PENDING_TESTS=$(jq '.stats.pending' "$RESULTS_FILE")" >> $GITHUB_ENV # <--- NUEVA LÍNEA: Extraemos pending
-          echo "TOTAL_TESTS=$(jq '.stats.tests' "$RESULTS_FILE")" >> "$GITHUB_ENV"
-
-          if [ "$(jq '.stats.failures' "$RESULTS_FILE")" -gt 0 ]; then
-            echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV
-          else
-            echo "SLACK_DYNAMIC_COLOR=good" >> $GITHUB_ENV
-          fi
-        fi
-
+    # Paso 6: Envía el resumen de los resultados de las pruebas a Slack.
+    # Este paso también se ejecuta 'always()' para asegurar que la notificación se envíe sin importar los resultados de las pruebas.
     - name: Send Slack Notification
-      if: always() # Ensures this step runs regardless of previous step's outcome.
-      uses: rtCamp/action-slack-notify@v2 # Uses a pre-built GitHub Action for Slack notifications.
-      env: # Environment variables passed to the Slack notification action.
-        SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} # Uses the dynamically determined color (green/red).
-        SLACK_USERNAME: ${{ inputs.slack-username }} # Uses the 'slack-username' input.
-        SLACK_ICON: ${{ inputs.slack-icon }}         # Uses the 'slack-icon' input.
-        SLACK_MESSAGE: | # The main message content for Slack, formatted using Markdown    
-          📊 Total: *${{ env.TOTAL_TESTS }}*
+      if: always() # Asegura que este paso se ejecute sin importar el resultado del paso anterior.
+      uses: rtCamp/action-slack-notify@v2 # Usa una GitHub Action preconstruida para notificaciones de Slack.
+      env: # Variables de entorno pasadas a la acción de notificación de Slack.
+        SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} # Usa el color determinado dinámicamente (verde/rojo).
+        SLACK_USERNAME: ${{ inputs.slack-username }} # Usa el input 'slack-username'.
+        SLACK_ICON: ${{ inputs.slack-icon }}         # Usa el input 'slack-icon'.
+        SLACK_MESSAGE: | # El contenido principal del mensaje de Slack, formateado usando Markdown.
+          *Resultados de Pruebas Cypress*
+          
+          Commit: `<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>`
+          Rama: `${{ github.ref_name }}`
+          
+          📊 *Resumen de Tests:*
+          Total: *${{ env.TOTAL_TESTS }}*
           ✅ Pasadas: *${{ env.PASSED_TESTS }}*
           ❌ Fallidas: *${{ env.FAILED_TESTS }}*
           ⚪️ Saltadas: *${{ env.SKIPPED_TESTS }}*
-          ⏳ Pendientes: *${{ env.PENDING_TESTS }}
+          ⏳ Pendientes: *${{ env.PENDING_TESTS }}*
           
           🔗 Ver workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        SLACK_TITLE: ${{ inputs.slack-title }} # Uses the 'slack-title' input.
-        SLACK_WEBHOOK: ${{ inputs.slack-webhook }} # Uses the 'slack-webhook' input (from secrets).
-        SLACK_FOOTER: ''
-        SLACK_AUTHOR: ''
+        SLACK_TITLE: ${{ inputs.slack-title }} # Usa el input 'slack-title'.
+        SLACK_WEBHOOK: ${{ inputs.slack-webhook }} # Usa el input 'slack-webhook' (de los secretos).
+        SLACK_FOOTER: '' # <-- Establece a cadena vacía para eliminar el pie de página "Powered By...".
+        SLACK_AUTHOR: '' # <-- Establece a cadena vacía para eliminar los detalles de autor/commit/ref.
