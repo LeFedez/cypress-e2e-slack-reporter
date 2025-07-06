@@ -129,7 +129,8 @@ runs:
         SLACK_USERNAME: ${{ inputs.slack-username }} # Usa el input 'slack-username'.
         SLACK_ICON: ${{ inputs.slack-icon }}         # Usa el input 'slack-icon'.
         SLACK_MESSAGE: |
-          
+        
+          ''
           📊 Total: *${{ env.TOTAL_TESTS }}*
           ✅ Passed: *${{ env.PASSED_TESTS }}*
           ❌ Failed: *${{ env.FAILED_TESTS }}*
