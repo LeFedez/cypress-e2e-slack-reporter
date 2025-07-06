@@ -72,7 +72,7 @@ runs:
     # existen en el repositorio donde se está usando esta acción (y también en el repositorio de ESTA acción para pruebas).
     - name: Install Project Dependencies
       shell: bash # Ejecuta el comando usando bash shell
-      run: npm ci # 'npm ci' requiere un package-lock.json para instalaciones consistentes.
+      run: npm install # 'npm ci' requiere un package-lock.json para instalaciones consistentes.
 
     # Paso 4: Ejecuta las pruebas de Cypress usando el comando proporcionado.
     # 'continue-on-error' asegura que el flujo de trabajo continúe incluso si las pruebas de Cypress fallan,
