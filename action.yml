@@ -141,3 +141,4 @@ runs:
         SLACK_FOOTER: '' # <-- Establece a cadena vacía para eliminar el pie de página "Powered By...".
         MSG_MINIMAL: true
         SLACK_FILE_UPLOAD: 'cypress/results/mochawesome.html'
+        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }} 
