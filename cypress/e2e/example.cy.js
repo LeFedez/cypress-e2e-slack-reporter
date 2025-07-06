@@ -8,8 +8,4 @@ describe('Mi primera suite de pruebas', () => {
     cy.visit('https://example.cypress.io')
     cy.title().should('include', 'Cypress.io')
   })
-    it('debería visitar un sitio web de ejemplo y verificar el título', () => {
-    cy.visit('https://example.cypress.io')
-    cy.title().should('include', 'hola')
-  })
 })
