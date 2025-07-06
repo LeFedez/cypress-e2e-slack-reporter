@@ -129,20 +129,17 @@ runs:
         SLACK_USERNAME: ${{ inputs.slack-username }} # Usa el input 'slack-username'.
         SLACK_ICON: ${{ inputs.slack-icon }}         # Usa el input 'slack-icon'.
         SLACK_MESSAGE: | # El contenido principal del mensaje de Slack, formateado usando Markdown.
-          *Resultados de Pruebas Cypress*
           
-          Commit: `<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>`
-          Rama: `${{ github.ref_name }}`
+          Commit: `<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>`Rama: `${{ github.ref_name }}`
           
-          📊 *Resumen de Tests:*
-          Total: *${{ env.TOTAL_TESTS }}*
-          ✅ Pasadas: *${{ env.PASSED_TESTS }}*
-          ❌ Fallidas: *${{ env.FAILED_TESTS }}*
-          ⚪️ Saltadas: *${{ env.SKIPPED_TESTS }}*
-          ⏳ Pendientes: *${{ env.PENDING_TESTS }}*
+          📊 Total: *${{ env.TOTAL_TESTS }}*
+          ✅ Passed: *${{ env.PASSED_TESTS }}*
+          ❌ Failed: *${{ env.FAILED_TESTS }}*
+          ⚪️ Skipped: *${{ env.SKIPPED_TESTS }}*
+          ⏳ Pending: *${{ env.PENDING_TESTS }}*
           
           🔗 Ver workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         SLACK_TITLE: ${{ inputs.slack-title }} # Usa el input 'slack-title'.
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }} # Usa el input 'slack-webhook' (de los secretos).
         SLACK_FOOTER: '' # <-- Establece a cadena vacía para eliminar el pie de página "Powered By...".
-        SLACK_AUTHOR: '' # <-- Establece a cadena vacía para eliminar los detalles de autor/commit/ref.
+        SLACK_AUTHOR: null # <-- Establece a cadena vacía para eliminar los detalles de autor/commit/ref.
