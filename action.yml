@@ -158,13 +158,15 @@ runs:
         SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} # Uses the dynamically determined color (green/red).
         SLACK_USERNAME: ${{ inputs.slack-username }} # Uses the 'slack-username' input.
         SLACK_ICON: ${{ inputs.slack-icon }}         # Uses the 'slack-icon' input.
-        SLACK_MESSAGE: | # The main message content for Slack, formatted using Markdown.          
+        SLACK_MESSAGE: | # The main message content for Slack, formatted using Markdown.    
+              
           📊 Total: *${{ env.TOTAL_TESTS }}*
           ✅ Pasadas: *${{ env.PASSED_TESTS }}*
           ❌ Fallidas: *${{ env.FAILED_TESTS }}*
           ⚪️ Saltadas: *${{ env.SKIPPED_TESTS }}*
-          ⏳ Pendientes: *${{ env.PENDING_TESTS }}* # <--- NUEVA LÍNEA: Mostramos pendientes
+          ⏳ Pendientes: *${{ env.PENDING_TESTS }}
           
           🔗 Ver workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         SLACK_TITLE: ${{ inputs.slack-title }} # Uses the 'slack-title' input.
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }} # Uses the 'slack-webhook' input (from secrets).
+        SLACK_FOOTER: ''
