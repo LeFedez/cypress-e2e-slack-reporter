@@ -128,9 +128,7 @@ runs:
         SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} # Usa el color determinado dinámicamente (verde/rojo).
         SLACK_USERNAME: ${{ inputs.slack-username }} # Usa el input 'slack-username'.
         SLACK_ICON: ${{ inputs.slack-icon }}         # Usa el input 'slack-icon'.
-        SLACK_MESSAGE: | # El contenido principal del mensaje de Slack, formateado usando Markdown.
-          
-          Commit: `<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>`Rama: `${{ github.ref_name }}`
+        SLACK_MESSAGE: |
           
           📊 Total: *${{ env.TOTAL_TESTS }}*
           ✅ Passed: *${{ env.PASSED_TESTS }}*
