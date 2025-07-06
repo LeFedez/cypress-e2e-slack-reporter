@@ -44,7 +44,7 @@ inputs:
   slack-title:
     description: 'El título principal del mensaje de Slack. Aparecerá en grande en la notificación.'
     required: false # Este input es opcional
-    default: 'Cypress E2E Test Results' # Título por defecto para la notificación de Slack
+    default: '*Cypress E2E Test Results*'  # Título por defecto para la notificación de Slack
 
   continue-on-cypress-error:
     description: 'Si es "true", la acción seguirá ejecutándose (y enviará la notificación a Slack) incluso si las pruebas de Cypress fallan. Si es "false", la acción se detendrá si fallan.'
@@ -137,7 +137,7 @@ runs:
           ⏳ Pending: *${{ env.PENDING_TESTS }}*
           
           🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        SLACK_TITLE: ${{ inputs.slack-title }} # Usa el input 'slack-title'.
+        SLACK_TITLE: ${{ inputs.slack-title }}  # Usa el input 'slack-title'.
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }} # Usa el input 'slack-webhook' (de los secretos).
         SLACK_FOOTER: '' # <-- Establece a cadena vacía para eliminar el pie de página "Powered By...".
         MSG_MINIMAL: true
