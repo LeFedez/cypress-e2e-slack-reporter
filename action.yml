@@ -151,21 +151,28 @@ runs:
           fi
         fi
 
-    - name: Send Slack Notification
-      if: always() # Ensures this step runs regardless of previous step's outcome.
-      uses: rtCamp/action-slack-notify@v2 # Uses a pre-built GitHub Action for Slack notifications.
-      env: # Environment variables passed to the Slack notification action.
-        SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} # Uses the dynamically determined color (green/red).
-        SLACK_USERNAME: ${{ inputs.slack-username }} # Uses the 'slack-username' input.
-        SLACK_ICON: ${{ inputs.slack-icon }}         # Uses the 'slack-icon' input.
-        SLACK_MESSAGE: | # The main message content for Slack, formatted using Markdown    
-          📊 Total: *${{ env.TOTAL_TESTS }}*
+- name: Send Slack Notification
+      if: always()
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }}
+        SLACK_USERNAME: ${{ inputs.slack-username }}
+        SLACK_ICON: ${{ inputs.slack-icon }}
+        SLACK_MESSAGE: |
+          *Resultados de Pruebas Cypress*
+          
+          Commit: `<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>`
+          Rama: `${{ github.ref_name }}`
+          
+          📊 *Resumen de Tests:*
+          Total: *${{ env.TOTAL_TESTS }}*
           ✅ Pasadas: *${{ env.PASSED_TESTS }}*
           ❌ Fallidas: *${{ env.FAILED_TESTS }}*
           ⚪️ Saltadas: *${{ env.SKIPPED_TESTS }}*
-          ⏳ Pendientes: *${{ env.PENDING_TESTS }}
+          ⏳ Pendientes: *${{ env.PENDING_TESTS }}*
           
           🔗 Ver workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        SLACK_TITLE: ${{ inputs.slack-title }} # Uses the 'slack-title' input.
-        SLACK_WEBHOOK: ${{ inputs.slack-webhook }} # Uses the 'slack-webhook' input (from secrets).
-        SLACK_FOOTER: ''
+        SLACK_TITLE: ${{ inputs.slack-title }}
+        SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
+        SLACK_FOOTER: '' 
+        SLACK_AUTHOR: ''  
