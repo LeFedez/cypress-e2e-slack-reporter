@@ -136,8 +136,8 @@ runs:
           ⚪️ Skipped: *${{ env.SKIPPED_TESTS }}*
           ⏳ Pending: *${{ env.PENDING_TESTS }}*
           
-          🔗 Ver workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         SLACK_TITLE: ${{ inputs.slack-title }} # Usa el input 'slack-title'.
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }} # Usa el input 'slack-webhook' (de los secretos).
         SLACK_FOOTER: '' # <-- Establece a cadena vacía para eliminar el pie de página "Powered By...".
-        SLACK_AUTHOR: null # <-- Establece a cadena vacía para eliminar los detalles de autor/commit/ref.
+        MSG_MINIMAL: true
