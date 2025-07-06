@@ -38,7 +38,7 @@ inputs:
   slack-icon:
     description: 'La URL de una imagen para el icono del bot en Slack. Esta imagen aparecerá en la notificación de Slack.'
     required: false # This input is optional
-    default: 'https://pbs.twimg.com/profile_images/1512090708181725184/KAPAXmDg_400x400.jpg' # Default icon for the Slack bot (Cypress logo)
+    default: 'https://drive.google.com/file/d/1FE6DMUhnD3Pwa2xJBSHDBqE1lm3Enrvn/view?usp=sharing' # Default icon for the Slack bot (Cypress logo)
     # You can change this to your preferred public image URL, e.g., 'https://github.com/your-username.png'
 
   slack-title:
