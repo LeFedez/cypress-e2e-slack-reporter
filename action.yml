@@ -72,7 +72,7 @@ runs:
     # exist in the repository where this action is being used (and also in THIS action's repo for testing).
     - name: Install Project Dependencies
       shell: bash # Executes the command using bash shell
-      run: npm ci # 'npm ci' requires a package-lock.json for consistent installs.
+      run: npm install # 'npm ci' requires a package-lock.json for consistent installs.
 
     # Step 4: Runs the Cypress tests using the provided command.
     # 'continue-on-error' ensures the workflow proceeds even if Cypress tests fail,
