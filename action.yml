@@ -129,8 +129,6 @@ runs:
         SLACK_USERNAME: ${{ inputs.slack-username }} # Usa el input 'slack-username'.
         SLACK_ICON: ${{ inputs.slack-icon }}         # Usa el input 'slack-icon'.
         SLACK_MESSAGE: |
-        
-          
           📊 Total: *${{ env.TOTAL_TESTS }}*
           ✅ Passed: *${{ env.PASSED_TESTS }}*
           ❌ Failed: *${{ env.FAILED_TESTS }}*
@@ -142,3 +140,4 @@ runs:
         SLACK_WEBHOOK: ${{ inputs.slack-webhook }} # Usa el input 'slack-webhook' (de los secretos).
         SLACK_FOOTER: '' # <-- Establece a cadena vacía para eliminar el pie de página "Powered By...".
         MSG_MINIMAL: true
+        SLACK_FILE_UPLOAD: 'cypress/results/mochawesome.html'
