@@ -119,6 +119,38 @@ runs:
 
     # Step 6: Sends the test results summary to Slack.
     # This step also runs 'always()' to ensure the notification is sent regardless of test outcomes.
+# ... (código anterior en action.yml) ...
+
+    - name: Extract Test Summary
+      if: always() # Ensures this step runs regardless of previous step's outcome.
+      shell: bash
+      run: |
+        sudo apt-get update && sudo apt-get install -y jq
+
+        RESULTS_FILE="cypress/results/mochawesome.json"
+        
+        if [ ! -f "$RESULTS_FILE" ]; then
+          echo "WARNING: Mochawesome results file '$RESULTS_FILE' not found. Defaulting test counts to 0."
+          echo "PASSED_TESTS=0" >> $GITHUB_ENV
+          echo "FAILED_TESTS=0" >> $GITHUB_ENV
+          echo "SKIPPED_TESTS=0" >> $GITHUB_ENV
+          echo "PENDING_TESTS=0" >> $GITHUB_ENV # <--- NUEVA LÍNEA: Añadimos PENDING_TESTS
+          echo "TOTAL_TESTS=0" >> $GITHUB_ENV
+          echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV
+        else
+          echo "PASSED_TESTS=$(jq '.stats.passes' "$RESULTS_FILE")" >> $GITHUB_ENV
+          echo "FAILED_TESTS=$(jq '.stats.failures' "$RESULTS_FILE")" >> $GITHUB_ENV
+          echo "SKIPPED_TESTS=$(jq '.stats.skipped' "$RESULTS_FILE")" >> $GITHUB_ENV
+          echo "PENDING_TESTS=$(jq '.stats.pending' "$RESULTS_FILE")" >> $GITHUB_ENV # <--- NUEVA LÍNEA: Extraemos pending
+          echo "TOTAL_TESTS=$(jq '.stats.tests' "$RESULTS_FILE")" >> "$GITHUB_ENV"
+
+          if [ "$(jq '.stats.failures' "$RESULTS_FILE")" -gt 0 ]; then
+            echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV
+          else
+            echo "SLACK_DYNAMIC_COLOR=good" >> $GITHUB_ENV
+          fi
+        fi
+
     - name: Send Slack Notification
       if: always() # Ensures this step runs regardless of previous step's outcome.
       uses: rtCamp/action-slack-notify@v2 # Uses a pre-built GitHub Action for Slack notifications.
@@ -127,9 +159,17 @@ runs:
         SLACK_USERNAME: ${{ inputs.slack-username }} # Uses the 'slack-username' input.
         SLACK_ICON: ${{ inputs.slack-icon }}         # Uses the 'slack-icon' input.
         SLACK_MESSAGE: | # The main message content for Slack, formatted using Markdown.
-          *Resultados de Pruebas Cypress* para el commit `<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>` en la rama `${{ github.ref_name }}`
+          *Resultados de Pruebas Cypress*
           
-          📊 Total: ${{ env.TOTAL_TESTS }} | ✅ Pasadas: ${{ env.PASSED_TESTS }} | ❌ Fallidas: ${{ env.FAILED_TESTS }} | ⚪️ Saltadas: ${{ env.SKIPPED_TESTS }}
+          Commit: `<https://github.com/${{ github.repository }}/commit/${{ github.sha }}>`
+          Rama: `${{ github.ref_name }}`
+          
+          📊 *Resumen de Tests:*
+          Total: *${{ env.TOTAL_TESTS }}*
+          ✅ Pasadas: *${{ env.PASSED_TESTS }}*
+          ❌ Fallidas: *${{ env.FAILED_TESTS }}*
+          ⚪️ Saltadas: *${{ env.SKIPPED_TESTS }}*
+          ⏳ Pendientes: *${{ env.PENDING_TESTS }}* # <--- NUEVA LÍNEA: Mostramos pendientes
           
           🔗 Ver workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         SLACK_TITLE: ${{ inputs.slack-title }} # Uses the 'slack-title' input.
