@@ -158,8 +158,7 @@ runs:
         SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} # Uses the dynamically determined color (green/red).
         SLACK_USERNAME: ${{ inputs.slack-username }} # Uses the 'slack-username' input.
         SLACK_ICON: ${{ inputs.slack-icon }}         # Uses the 'slack-icon' input.
-        SLACK_MESSAGE: | # The main message content for Slack, formatted using Markdown.    
-              
+        SLACK_MESSAGE: | # The main message content for Slack, formatted using Markdown    
           📊 Total: *${{ env.TOTAL_TESTS }}*
           ✅ Pasadas: *${{ env.PASSED_TESTS }}*
           ❌ Fallidas: *${{ env.FAILED_TESTS }}*
