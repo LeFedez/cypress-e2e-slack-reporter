@@ -78,37 +78,58 @@ runs:
       if: always()
       shell: bash
       run: |
-        # Installs 'jq' (JSON processor) as it may not be pre-installed on all runners.
-        # This ensures the script can parse the Mochawesome JSON report.
-        sudo apt-get update && sudo apt-get install -y jq
+        echo "--- Starting Extract Test Summary ---"
+            # Instala 'jq' (procesador de JSON) ya que podría no estar preinstalado en todos los runners.
+            sudo apt-get update && sudo apt-get install -y jq || { echo "ERROR: Failed to install jq. Exiting."; exit 1; }
 
-        RESULTS_FILE="cypress/results/mochawesome.json"
-        
-        # Checks if the Mochawesome report file exists. If not, default counts will be 0 and color will be red.
-        if [ ! -f "$RESULTS_FILE" ]; then
-          echo "WARNING: Mochawesome results file '$RESULTS_FILE' not found. Defaulting test counts to 0."
-          echo "PASSED_TESTS=0" >> $GITHUB_ENV
-          echo "FAILED_TESTS=0" >> $GITHUB_ENV
-          echo "SKIPPED_TESTS=0" >> $GITHUB_ENV
-          echo "PENDING_TESTS=0" >> $GITHUB_ENV 
-          echo "TOTAL_TESTS=0" >> $GITHUB_ENV
-          echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV # Sets color to red if no results found
-        else
-          # Parses the Mochawesome JSON report to get test statistics.
-          echo "PASSED_TESTS=$(jq '.stats.passes' \"$RESULTS_FILE\")" >> $GITHUB_ENV
-          echo "FAILED_TESTS=$(jq '.stats.failures' \"$RESULTS_FILE\")" >> $GITHUB_ENV
-          echo "SKIPPED_TESTS=$(jq '.stats.skipped' \"$RESULTS_FILE\")" >> $GITHUB_ENV
-          echo "PENDING_TESTS=$(jq '.stats.pending' \"$RESULTS_FILE\")" >> $GITHUB_ENV
-          echo "TOTAL_TESTS=$(jq '.stats.tests' \"$RESULTS_FILE\")" >> "$GITHUB_ENV"
+            # Define la ruta absoluta al archivo de resultados de Mochawesome.
+            # GITHUB_WORKSPACE es la ruta donde se clona tu repositorio.
+            MOCHAWESOME_RESULTS_DIR="${{ github.workspace }}/cypress/results"
+            RESULTS_FILE="${MOCHAWESOME_RESULTS_DIR}/mochawesome.json"
+            HTML_FILE="${MOCHAWESOME_RESULTS_DIR}/mochawesome.html"
 
-          # Determines the Slack notification color based on test failures.
-          if [ "$(jq '.stats.failures' \"$RESULTS_FILE\")" -gt 0 ]; then
-            echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV # Red for failures
-          else
-            echo "SLACK_DYNAMIC_COLOR=good" >> $GITHUB_ENV  # Green for success
-          fi
-        fi
+            echo "Cypress results directory: ${MOCHAWESOME_RESULTS_DIR}"
+            echo "Expected JSON file: ${RESULTS_FILE}"
+            echo "Expected HTML file: ${HTML_FILE}"
 
+            # Lista el contenido de la carpeta de resultados para depuración.
+            echo "Contents of cypress/results/ before parsing:"
+            ls -al "${MOCHAWESOME_RESULTS_DIR}" || { echo "WARNING: cypress/results directory not found or empty."; }
+
+            # Verifica si el archivo de reporte de Mochawesome existe. Si no, las cuentas por defecto serán 0 y el color será rojo.
+            if [ ! -f "$RESULTS_FILE" ]; then
+              echo "ERROR: Mochawesome results JSON file '$RESULTS_FILE' not found. Defaulting test counts to 0 and setting color to danger."
+              echo "PASSED_TESTS=0" >> $GITHUB_ENV
+              echo "FAILED_TESTS=0" >> $GITHUB_ENV
+              echo "SKIPPED_TESTS=0" >> $GITHUB_ENV
+              echo "PENDING_TESTS=0" >> $GITHUB_ENV 
+              echo "TOTAL_TESTS=0" >> $GITHUB_ENV
+              echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV # Establece el color a rojo si no se encuentran resultados
+              # Esto también evitará que jq falle al intentar leer un archivo inexistente.
+            else
+              echo "Mochawesome results JSON file found. Parsing..."
+              # Parsea el reporte JSON de Mochawesome para obtener las estadísticas de las pruebas.
+              # Usamos `|| echo "0"` para asegurar que si jq no encuentra la clave, el valor por defecto sea 0.
+              echo "PASSED_TESTS=$(jq '.stats.passes // 0' "$RESULTS_FILE")" >> $GITHUB_ENV
+              echo "FAILED_TESTS=$(jq '.stats.failures // 0' "$RESULTS_FILE")" >> $GITHUB_ENV
+              echo "SKIPPED_TESTS=$(jq '.stats.skipped // 0' "$RESULTS_FILE")" >> $GITHUB_ENV
+              echo "PENDING_TESTS=$(jq '.stats.pending // 0' "$RESULTS_FILE")" >> $GITHUB_ENV
+              echo "TOTAL_TESTS=$(jq '.stats.tests // 0' "$RESULTS_FILE")" >> "$GITHUB_ENV"
+
+              # Determina el color de la notificación de Slack basándose en los fallos de las pruebas.
+              if [ "$(jq '.stats.failures // 0' "$RESULTS_FILE")" -gt 0 ]; then
+                echo "SLACK_DYNAMIC_COLOR=danger" >> $GITHUB_ENV # Rojo para fallos
+              else
+                echo "SLACK_DYNAMIC_COLOR=good" >> $GITHUB_ENV  # Verde para éxito
+              fi
+              echo "Test counts extracted: Passed=${PASSED_TESTS}, Failed=${FAILED_TESTS}, Skipped=${SKIPPED_TESTS}, Pending=${PENDING_TESTS}, Total=${TOTAL_TESTS}"
+            fi
+
+            # Asegúrate de que SLACK_FILE_UPLOAD apunte a donde debe estar el HTML
+            echo "Setting SLACK_FILE_UPLOAD to: ${HTML_FILE}"
+            echo "SLACK_FILE_UPLOAD=${HTML_FILE}" >> $GITHUB_ENV
+
+            echo "--- Finished Extract Test Summary ---"
     - name: Send Slack Notification
       if: always() 
       uses: rtCamp/action-slack-notify@v2
