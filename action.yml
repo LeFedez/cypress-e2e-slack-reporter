@@ -52,9 +52,14 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
-    - name: Install dependencies
-      shell: bash
-      run: npm ci
+- name: Install dependencies
+  shell: bash
+  run: |
+    if [ -f package-lock.json ]; then
+      npm ci
+    else
+      npm install
+    fi
       
     # Paso 3.5: Depuración - Verificar entorno y PATH
     - name: Debug - Verify Node and Cypress Installation
