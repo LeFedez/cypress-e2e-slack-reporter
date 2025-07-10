@@ -15,7 +15,7 @@ inputs:
   cypress-command:
     description: 'The full command to run Cypress. Useful for customizing options like recording or using a specific browser.'
     required: false 
-    default: 'npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=true,json=true' # Comando Cypress por defecto
+    default: 'npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=true,json=true' 
 
   slack-webhook:
     description: 'Very important! The secret for your Slack Webhook URL. You must store it in the GitHub Secrets of the repository using this action.'
@@ -23,13 +23,13 @@ inputs:
 
   slack-username:
     description: 'The bot name that will appear in the Slack notification.'
-    required: false
+    required: true
     default: 'CyBot'
 
   slack-icon:
     description: 'The URL of an image for the bot icon in Slack. This image will appear in the Slack notification.'
-    required: false # 
-    default: 'https://pbs.twimg.com/profile_images/1512090708181725184/KAPAXmDg_400x400.jpg' # Icono por defecto 
+    required: true 
+    default: '' 
     
 
   slack-title:
