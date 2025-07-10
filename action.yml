@@ -98,7 +98,7 @@ runs:
 
     - name: Send Slack Notification
       if: always() 
-      uses: rtCamp/action-slack-notify@v2 .
+      uses: rtCamp/action-slack-notify@v2
       env: 
         SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} 
         SLACK_USERNAME: ${{ inputs.slack-username }}
