@@ -72,10 +72,6 @@ runs:
             npx cypress --version || echo "Cypress not found via npx"
             echo "--- End Debugging ---"    
 
-        # Paso 4: Runs the Cypress tests using the provided command.
-        # ... (el resto de tu paso "Run Cypress Tests with Mochawesome")  
-
-
     - name: Run Cypress Tests with Mochawesome
       shell: bash
       run: ${{ inputs.cypress-command }} 
