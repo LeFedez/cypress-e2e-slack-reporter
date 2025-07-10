@@ -60,6 +60,19 @@ runs:
       shell: bash
       run: ${{ inputs.cypress-command }} 
       continue-on-error: ${{ fromJSON(inputs.continue-on-cypress-error) }} 
+      
+    - name: Debug - List Cypress Results
+      if: always() # Ejecutar siempre para depuración
+      shell: bash
+      run: |
+        echo "Listing contents of cypress/results:"
+        ls -l cypress/results/
+        echo "Checking for mochawesome.json size:"
+        if [ -f cypress/results/mochawesome.json ]; then
+          stat -c %s cypress/results/mochawesome.json
+        else
+          echo "mochawesome.json not found."
+        fi  
 
     - name: Extract Test Summary
       if: always()
