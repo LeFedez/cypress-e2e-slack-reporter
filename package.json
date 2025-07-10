@@ -1,14 +1,14 @@
 {
   "name": "cypress-action-test-project",
   "version": "1.0.0",
-  "description": "Un pequeño proyecto para probar la GitHub Action de Cypress.",
+  "description": "A small project to test the Cypress GitHub Action.",
   "main": "index.js",
   "scripts": {
     "cypress:open": "cypress open",
     "cypress:run": "cypress run"
   },
   "keywords": [],
-  "author": "Tu Nombre",
+  "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
     "cypress": "^13.0.0",

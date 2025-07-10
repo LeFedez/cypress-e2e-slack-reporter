@@ -1,10 +1,11 @@
 // cypress/e2e/example.cy.js
-describe('Mi primera suite de pruebas', () => {
-  it('debería pasar siempre', () => {
+// Example Cypress test file
+describe('My first test suite', () => {
+  it('should always pass', () => {
     expect(true).to.equal(true)
   })
 
-  it('debería visitar un sitio web de ejemplo y verificar el título', () => {
+  it('should visit an example website and check the title', () => {
     cy.visit('https://example.cypress.io')
     cy.title().should('include', 'Cypress.io')
   })
