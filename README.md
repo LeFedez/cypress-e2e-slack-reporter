@@ -50,6 +50,38 @@ See `action.yml` for all configuration options. Key inputs:
     slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
 ```
 
+## Slack Notification Example
+
+This action uses [rtCamp/action-slack-notify@v2](https://github.com/rtCamp/action-slack-notify) to send detailed test results to Slack. Below is an example of the notification step as defined in `action.yml`:
+
+```yaml
+- name: Send Slack Notification
+  if: always()
+  uses: rtCamp/action-slack-notify@v2
+  env:
+    SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }}
+    SLACK_USERNAME: ${{ inputs.slack-username }}
+    SLACK_ICON: ${{ inputs.slack-icon }}
+    SLACK_MESSAGE: |
+      📊 Total: *${{ env.TOTAL_TESTS }}*
+      ✅ Passed: *${{ env.PASSED_TESTS }}*
+      ❌ Failed: *${{ env.FAILED_TESTS }}*
+      ⚪️ Skipped: *${{ env.SKIPPED_TESTS }}*
+      ⏳ Pending: *${{ env.PENDING_TESTS }}*
+      
+      🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    SLACK_TITLE: ${{ inputs.slack-title }}
+    SLACK_WEBHOOK: ${{ inputs.slack-webhook }}
+    SLACK_FOOTER: ''
+    MSG_MINIMAL: true
+```
+
+**Configuration required:**
+- You must create a Slack Incoming Webhook and add it as a GitHub Secret named `SLACK_WEBHOOK`.
+- Optionally, you can customize the bot name, icon, and message title using the action inputs.
+
+For more details, see the [rtCamp/action-slack-notify documentation](https://github.com/rtCamp/action-slack-notify).
+
 ## Project Structure
 - `cypress/` - Cypress test folder
 - `cypress/e2e/example.cy.js` - Example test file
