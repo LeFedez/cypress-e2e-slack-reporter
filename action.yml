@@ -1,5 +1,5 @@
 name: 'Cypress E2E Regression Tests with Slack Notification'
-description: 'Runs Cypress E2E tests, generates Mochawesome reports, and notifies detailed results to Slack.'
+description: 'Ejecuta pruebas Cypress E2E, genera reportes Mochawesome y notifica los resultados detallados a Slack.'
 author: 'LeFedez' 
 
 branding:
@@ -8,39 +8,39 @@ branding:
 
 inputs:
   node-version:
-    description: 'The Node.js version to use for running Cypress tests. E.g.: "18" or "20".'
+    description: 'La versión de Node.js a usar para ejecutar las pruebas Cypress. Ej: "18" o "20".'
     required: false 
     default: '18'   
 
   cypress-command:
-    description: 'The full command to run Cypress. Useful for customizing options like recording or using a specific browser.'
+    description: 'El comando completo para ejecutar Cypress. Útil para personalizar opciones como grabar o usar un navegador específico.'
     required: false 
-    default: 'npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=true,json=true' # Default Cypress command
+    default: 'npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=true,json=true' # Comando Cypress por defecto
 
   slack-webhook:
-    description: 'Very important! The secret for your Slack Webhook URL. You must store it in the GitHub Secrets of the repository using this action.'
+    description: '¡Muy importante! El secreto para tu URL del Webhook de Slack. Debes guardarlo en los Secretos de GitHub del repositorio que use esta acción.'
     required: true
 
   slack-username:
-    description: 'The bot name that will appear in the Slack notification.'
+    description: 'El nombre del bot que aparecerá en la notificación de Slack.'
     required: false
     default: 'CyBot'
 
   slack-icon:
-    description: 'The URL of an image for the bot icon in Slack. This image will appear in the Slack notification.'
+    description: 'La URL de una imagen para el icono del bot en Slack. Esta imagen aparecerá en la notificación de Slack.'
     required: false # 
-    default: 'https://pbs.twimg.com/profile_images/1512090708181725184/KAPAXmDg_400x400.jpg' # Default icon 
+    default: 'https://pbs.twimg.com/profile_images/1512090708181725184/KAPAXmDg_400x400.jpg' # Icono por defecto 
     
 
   slack-title:
-    description: 'The main title of the Slack message. It will appear prominently in the notification.'
+    description: 'El título principal del mensaje de Slack. Aparecerá en grande en la notificación.'
     required: false 
-    default: '*Cypress E2E Test Results*'  # Default title for the Slack notification
+    default: '*Cypress E2E Test Results*'  # Título por defecto para la notificación de Slack
 
   continue-on-cypress-error:
-    description: 'If "true", the action will continue (and send the Slack notification) even if Cypress tests fail. If "false", the action will stop if they fail.'
+    description: 'Si es "true", la acción seguirá ejecutándose (y enviará la notificación a Slack) incluso si las pruebas de Cypress fallan. Si es "false", la acción se detendrá si fallan.'
     required: false 
-    default: 'true' # Default behavior: always send Slack notification, even if tests fail.
+    default: 'true' # Comportamiento por defecto: siempre enviar notificación de Slack, incluso si las pruebas fallan.
 
 runs:
   using: "composite" 
