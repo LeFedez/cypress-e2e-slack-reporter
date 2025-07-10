@@ -54,7 +54,7 @@ runs:
 
     - name: Install Project Dependencies
       shell: bash 
-      run: npm ci
+      run: npm install
 
     - name: Run Cypress Tests with Mochawesome
       shell: bash
