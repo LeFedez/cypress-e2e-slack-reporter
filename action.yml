@@ -124,11 +124,6 @@ runs:
               fi
               echo "Test counts extracted: Passed=${PASSED_TESTS}, Failed=${FAILED_TESTS}, Skipped=${SKIPPED_TESTS}, Pending=${PENDING_TESTS}, Total=${TOTAL_TESTS}"
             fi
-
-            # Asegúrate de que SLACK_FILE_UPLOAD apunte a donde debe estar el HTML
-            echo "Setting SLACK_FILE_UPLOAD to: ${HTML_FILE}"
-            echo "SLACK_FILE_UPLOAD=${HTML_FILE}" >> $GITHUB_ENV
-
             echo "--- Finished Extract Test Summary ---"
     - name: Send Slack Notification
       if: always() 
