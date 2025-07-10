@@ -55,6 +55,26 @@ runs:
     - name: Install Project Dependencies
       shell: bash 
       run: npm install
+    # Paso 3.5: Depuración - Verificar entorno y PATH
+    - name: Debug - Verify Node and Cypress Installation
+      shell: bash
+      run: |
+            echo "--- Debugging Node/Cypress environment ---"
+            echo "Node.js version:"
+            node -v || echo "Node.js not found in PATH"
+            echo "npm version:"
+            npm -v || echo "npm not found in PATH"
+            echo "PATH environment variable:"
+            echo $PATH
+            echo "Checking if npx is available:"
+            which npx || echo "npx not found in PATH"
+            echo "Checking if Cypress is available via npx:"
+            npx cypress --version || echo "Cypress not found via npx"
+            echo "--- End Debugging ---"    
+
+        # Paso 4: Runs the Cypress tests using the provided command.
+        # ... (el resto de tu paso "Run Cypress Tests with Mochawesome")  
+
 
     - name: Run Cypress Tests with Mochawesome
       shell: bash
