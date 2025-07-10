@@ -29,7 +29,7 @@ inputs:
   slack-icon:
     description: 'The URL of an image for the bot icon in Slack. This image will appear in the Slack notification.'
     required: true 
-    default: '' 
+    default: 'https://drive.google.com/drive/u/0/folders/13It96b6W_F1uaPMpFqfMYR7zKfEpyEfe' 
     
 
   slack-title:
