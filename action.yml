@@ -52,9 +52,9 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
-    - name: Install Project Dependencies
-      shell: bash 
-      run: npm install
+    - name: Install dependencies
+      run: npm ci
+      
     # Paso 3.5: Depuración - Verificar entorno y PATH
     - name: Debug - Verify Node and Cypress Installation
       shell: bash
