@@ -1,91 +1,68 @@
-# action.yml
-# Este archivo define tu GitHub Action.
-# Asegúrate de que la primera línea 'name:' comience en la columna 1 (sin espacios al inicio).
-
 name: 'Cypress E2E Regression Tests with Slack Notification'
 description: 'Ejecuta pruebas Cypress E2E, genera reportes Mochawesome y notifica los resultados detallados a Slack.'
-author: 'Tu Nombre / Tu Organización' # <-- IMPORTANTE: Cambia esto a tu nombre de usuario de GitHub o nombre de tu organización.
+author: 'LeFedez' 
 
-# La sección 'branding' define cómo se ve tu acción en el GitHub Marketplace.
-# Puedes elegir iconos de Octicons y colores específicos.
-# Más iconos de Octicons aquí: https://octicons.github.com/
 branding:
-  icon: 'bell'      # Icono recomendado para notificaciones (ej: 'bell', 'paper-airplane', 'megaphone')
-  color: 'blue'     # Color recomendado para notificaciones (ej: 'blue', 'green', 'red', 'yellow', 'purple', 'orange', 'gray', 'white')
+  icon: 'bell'      
+  color: 'blue'   
 
-# La sección 'inputs' define los parámetros que los usuarios pueden proporcionar al usar tu acción.
-# Cada input tiene una descripción, un estado 'required' (requerido), y un valor 'default' (por defecto) opcional.
 inputs:
   node-version:
     description: 'La versión de Node.js a usar para ejecutar las pruebas Cypress. Ej: "18" o "20".'
-    required: false # Este input es opcional
-    default: '18'   # Versión de Node.js por defecto si no es especificada por el usuario
+    required: false 
+    default: '18'   
 
   cypress-command:
     description: 'El comando completo para ejecutar Cypress. Útil para personalizar opciones como grabar o usar un navegador específico.'
-    required: false # Este input es opcional
+    required: false 
     default: 'npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=true,json=true' # Comando Cypress por defecto
 
   slack-webhook:
     description: '¡Muy importante! El secreto para tu URL del Webhook de Slack. Debes guardarlo en los Secretos de GitHub del repositorio que use esta acción.'
-    required: true # Este input es OBLIGATORIO. La acción no puede enviar notificaciones de Slack sin él.
+    required: true
 
   slack-username:
     description: 'El nombre del bot que aparecerá en la notificación de Slack.'
-    required: false # Este input es opcional
-    default: 'CyBot' # Nombre de usuario por defecto para el bot de Slack
+    required: false
+    default: 'CyBot'
 
   slack-icon:
     description: 'La URL de una imagen para el icono del bot en Slack. Esta imagen aparecerá en la notificación de Slack.'
-    required: false # Este input es opcional
-    default: 'https://pbs.twimg.com/profile_images/1512090708181725184/KAPAXmDg_400x400.jpg' # Icono por defecto para el bot de Slack (logo de Cypress)
-    # Puedes cambiar esto a la URL pública de tu imagen preferida, ej: 'https://github.com/tu-usuario.png'
+    required: false # 
+    default: 'https://pbs.twimg.com/profile_images/1512090708181725184/KAPAXmDg_400x400.jpg' # Icono por defecto 
+    
 
   slack-title:
     description: 'El título principal del mensaje de Slack. Aparecerá en grande en la notificación.'
-    required: false # Este input es opcional
+    required: false 
     default: '*Cypress E2E Test Results*'  # Título por defecto para la notificación de Slack
 
   continue-on-cypress-error:
     description: 'Si es "true", la acción seguirá ejecutándose (y enviará la notificación a Slack) incluso si las pruebas de Cypress fallan. Si es "false", la acción se detendrá si fallan.'
-    required: false # Este input es opcional
+    required: false 
     default: 'true' # Comportamiento por defecto: siempre enviar notificación de Slack, incluso si las pruebas fallan.
 
-# La sección 'runs' define cómo se ejecuta tu acción.
-# 'composite' significa que tu acción consiste en múltiples comandos de shell y otras acciones.
 runs:
-  using: "composite" # Indica que es una acción compuesta, ejecutando una secuencia de pasos.
+  using: "composite" 
   steps:
-    # Paso 1: Descarga el código del repositorio. Esto es esencial para que la acción
-    # acceda a tus archivos de prueba de Cypress y package.json.
     - name: Checkout Code
       uses: actions/checkout@v3
-
-    # Paso 2: Configura el entorno de Node.js con la versión especificada.
     - name: Setup Node.js Environment
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ inputs.node-version }} # Usa el input 'node-version' proporcionado por el usuario.
+        node-version: ${{ inputs.node-version }}
 
-    # Paso 3: Instala las dependencias del proyecto (Cypress, Mochawesome, etc.).
-    # Este paso asume que un 'package.json' y un 'package-lock.json' (o 'npm-shrinkwrap.json')
-    # existen en el repositorio donde se está usando esta acción (y también en el repositorio de ESTA acción para pruebas).
     - name: Install Project Dependencies
-      shell: bash # Ejecuta el comando usando bash shell
-      run: npm install # 'npm ci' requiere un package-lock.json para instalaciones consistentes.
+      shell: bash 
+      run: npm install 
 
-    # Paso 4: Ejecuta las pruebas de Cypress usando el comando proporcionado.
-    # 'continue-on-error' asegura que el flujo de trabajo continúe incluso si las pruebas de Cypress fallan,
-    # para que la notificación de Slack pueda ser enviada de todas formas.
     - name: Run Cypress Tests with Mochawesome
       shell: bash
-      run: ${{ inputs.cypress-command }} # Usa el input 'cypress-command'.
-      continue-on-error: ${{ fromJSON(inputs.continue-on-cypress-error) }} # Convierte el input de cadena a booleano.
+      run: ${{ inputs.cypress-command }} 
+      continue-on-error: ${{ fromJSON(inputs.continue-on-cypress-error) }} 
 
-    # Paso 5: Extrae el resumen de las pruebas (pasadas, fallidas, saltadas) del reporte de Mochawesome.
-    # Este paso se ejecuta 'always()' para asegurar que la notificación de Slack pueda enviarse incluso si las pruebas fallan o el paso anterior tuvo un error.
     - name: Extract Test Summary
-      if: always() # Asegura que este paso se ejecute sin importar el resultado del paso anterior.
+      if: always()
       shell: bash
       run: |
         # Instala 'jq' (procesador de JSON) ya que podría no estar preinstalado en todos los runners.
@@ -119,15 +96,14 @@ runs:
           fi
         fi
 
-    # Paso 6: Envía el resumen de los resultados de las pruebas a Slack.
-    # Este paso también se ejecuta 'always()' para asegurar que la notificación se envíe sin importar los resultados de las pruebas.
+   
     - name: Send Slack Notification
-      if: always() # Asegura que este paso se ejecute sin importar el resultado del paso anterior.
-      uses: rtCamp/action-slack-notify@v2 # Usa una GitHub Action preconstruida para notificaciones de Slack.
-      env: # Variables de entorno pasadas a la acción de notificación de Slack.
-        SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} # Usa el color determinado dinámicamente (verde/rojo).
-        SLACK_USERNAME: ${{ inputs.slack-username }} # Usa el input 'slack-username'.
-        SLACK_ICON: ${{ inputs.slack-icon }}         # Usa el input 'slack-icon'.
+      if: always() 
+      uses: rtCamp/action-slack-notify@v2 .
+      env: 
+        SLACK_COLOR: ${{ env.SLACK_DYNAMIC_COLOR }} 
+        SLACK_USERNAME: ${{ inputs.slack-username }}
+        SLACK_ICON: ${{ inputs.slack-icon }}       
         SLACK_MESSAGE: |
           📊 Total: *${{ env.TOTAL_TESTS }}*
           ✅ Passed: *${{ env.PASSED_TESTS }}*
@@ -136,7 +112,7 @@ runs:
           ⏳ Pending: *${{ env.PENDING_TESTS }}*
           
           🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        SLACK_TITLE: ${{ inputs.slack-title }}  # Usa el input 'slack-title'.
-        SLACK_WEBHOOK: ${{ inputs.slack-webhook }} # Usa el input 'slack-webhook' (de los secretos).
-        SLACK_FOOTER: '' # <-- Establece a cadena vacía para eliminar el pie de página "Powered By...".
+        SLACK_TITLE: ${{ inputs.slack-title }}  
+        SLACK_WEBHOOK: ${{ inputs.slack-webhook }} 
+        SLACK_FOOTER: '' 
         MSG_MINIMAL: true
