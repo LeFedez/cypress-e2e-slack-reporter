@@ -1,4 +1,4 @@
-# 🚀 Cypress E2E Slack Reporter
+#  Cypress E2E Slack Reporter
 
 [![Project Status: Active](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/your-org/cypress-e2e-slack-reporter)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -11,7 +11,7 @@ A GitHub Action to run [Cypress](https://www.cypress.io/) end-to-end tests, gene
 
 ## 📦 Quick Start
 
-Add this workflow to `.github/workflows/cypress-e2e.yml`:
+Add this workflow to your `.yml` file:
 
 ```yaml
 on: [push, pull_request]
@@ -78,7 +78,7 @@ After tests are executed, a summary is posted to Slack via [rtCamp/action-slack-
 
 Here’s an example of the Slack message you’ll receive after your Cypress tests run:
 
-![Slack Notification Example](docs/slack-notification-br.png)
+![Slack Notification Example](docs/slack-notification-1.jpg)
 
 ---
 
@@ -89,18 +89,6 @@ Here’s an example of the Slack message you’ll receive after your Cypress tes
 - File uploads to Slack are disabled by default for security reasons.
 - Set `continue-on-cypress-error: true` to prevent workflow failure on test errors.
 
----
-
-## 📁 Project Structure
-
-```
-.
-├── .github/workflows/cypress-e2e.yml  # Example GitHub Action
-├── action.yml                         # Action definition
-├── cypress/                           # Cypress test files
-├── cypress.config.js                  # Cypress config
-└── package.json                       # Dev dependencies & scripts
-```
 
 ---
 
