@@ -3,8 +3,7 @@
 [![Project Status: Active](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/your-org/cypress-e2e-slack-reporter)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A GitHub Action to run [Cypress](https://www.cypress.io/) end-to-end tests, generate Mochawesome reports, and send a summary of results to Slack.  
-Designed for seamless CI integration and clear team notifications.
+A GitHub Action to run [Cypress](https://www.cypress.io/) end-to-end tests, generate Mochawesome reports, and send a summary of results to Slack. Designed for seamless CI integration and clear team notifications.
 
 > **Inspired by:** [rtCamp/action-slack-notify](https://github.com/rtCamp/action-slack-notify) 🙌
 
@@ -20,7 +19,6 @@ on: [push, pull_request]
 jobs:
   cypress-e2e:
     runs-on: ubuntu-latest
-
     steps:
       - name: Cypress to Slack
         uses: LeFedez/cypress-e2e-slack-reporter@v1.1.1
@@ -32,65 +30,80 @@ jobs:
           slack-title: "*Cypress E2E Test Results*"
           continue-on-cypress-error: true
           slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
-✅ Requirements
-Node.js 18+
+```
 
-Cypress + Mochawesome as dev dependencies
+---
 
-Slack Webhook URL stored as a GitHub Secret (SLACK_WEBHOOK)
+## ✅ Requirements
 
-⚙️ Configuration
-These are the main input options (action.yml contains the full list):
+- Node.js 18+
+- Cypress & Mochawesome as dev dependencies
+- Slack Webhook URL stored as a GitHub Secret (`SLACK_WEBHOOK`)
 
-Input	Required	Description
-slack-webhook	✅	Slack Incoming Webhook URL (GitHub Secret)
-node-version	❌	Node.js version (default: 18)
-cypress-command	❌	Custom Cypress run command
-slack-username	❌	Display name for the Slack bot
-slack-icon	❌	Icon URL for the Slack bot
-slack-title	❌	Title for the Slack message
-continue-on-cypress-error	❌	Avoid failing the workflow if Cypress tests fail (default: true)
+---
 
-🔔 Slack Notification
-After tests are executed, a summary is posted to Slack via rtCamp/action-slack-notify.
+## ⚙️ Configuration
 
-Includes:
-✅ Total, passed, failed, skipped, and pending tests
+Main input options (see `action.yml` for full list):
 
-🔗 Link to the workflow run
+| Input                    | Required | Description                                      |
+|--------------------------|----------|--------------------------------------------------|
+| `slack-webhook`          | ✅       | Slack Incoming Webhook URL (GitHub Secret)        |
+| `node-version`           | ❌       | Node.js version (default: 18)                     |
+| `cypress-command`        | ❌       | Custom Cypress run command                        |
+| `slack-username`         | ❌       | Display name for the Slack bot                    |
+| `slack-icon`             | ❌       | Icon URL for the Slack bot                        |
+| `slack-title`            | ❌       | Title for the Slack message                       |
+| `continue-on-cypress-error` | ❌    | Avoid failing the workflow if tests fail (default: true) |
 
-🎨 Customizable bot name, icon, and message title
+---
 
-To enable:
-Create a Slack Incoming Webhook
+## 🔔 Slack Notification
 
-Add it to your GitHub repo as a secret named SLACK_WEBHOOK
+After tests are executed, a summary is posted to Slack via [rtCamp/action-slack-notify](https://github.com/rtCamp/action-slack-notify).
 
-(Optional) Customize the bot appearance using inputs
+**Includes:**
+- Total, passed, failed, skipped, and pending tests
+- Link to the workflow run
+- Customizable bot name, icon, and message title
 
-📸 Example Notification
+**To enable:**
+1. Create a Slack Incoming Webhook
+2. Add it to your GitHub repo as a secret named `SLACK_WEBHOOK`
+3. (Optional) Customize the bot appearance using inputs
+
+---
+
+## 📸 Example Notification
+
 Here’s an example of the Slack message you’ll receive after your Cypress tests run:
 
 ![Slack Notification Example](docs/slack-notification-br.png)
 
-🛠️ Troubleshooting
-If package-lock.json is missing, the action defaults to npm install instead of npm ci.
+---
 
-Double-check that the SLACK_WEBHOOK secret is correctly defined.
+## 🛠️ Troubleshooting
 
-File uploads to Slack are disabled by default for security reasons.
+- If `package-lock.json` is missing, the action defaults to `npm install` instead of `npm ci`.
+- Double-check that the `SLACK_WEBHOOK` secret is correctly defined.
+- File uploads to Slack are disabled by default for security reasons.
+- Set `continue-on-cypress-error: true` to prevent workflow failure on test errors.
 
-Set continue-on-cypress-error: true to prevent workflow failure on test errors.
+---
 
-📁 Project Structure
-bash
-Copiar
-Editar
+## 📁 Project Structure
+
+```
 .
 ├── .github/workflows/cypress-e2e.yml  # Example GitHub Action
 ├── action.yml                         # Action definition
 ├── cypress/                           # Cypress test files
 ├── cypress.config.js                  # Cypress config
 └── package.json                       # Dev dependencies & scripts
-📝 License
+```
+
+---
+
+## 📝 License
+
 This project is licensed under the MIT License.
