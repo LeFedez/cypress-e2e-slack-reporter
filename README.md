@@ -1,79 +1,96 @@
-# Cypress E2E Slack Reporter
+# 🚀 Cypress E2E Slack Reporter
 
 [![Project Status: Active](https://img.shields.io/badge/status-active-brightgreen)](https://github.com/your-org/cypress-e2e-slack-reporter)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A GitHub Action to run Cypress end-to-end (E2E) tests, generate Mochawesome JSON reports, and send a summary of results to Slack. Designed for easy CI integration and clear team notifications.
+A GitHub Action to run [Cypress](https://www.cypress.io/) end-to-end tests, generate Mochawesome reports, and send a summary of results to Slack.  
+Designed for seamless CI integration and clear team notifications.
+
+> **Inspired by:** [rtCamp/action-slack-notify](https://github.com/rtCamp/action-slack-notify) 🙌
 
 ---
 
-## Quick Start
+## 📦 Quick Start
 
-Add this to `.github/workflows/cypress-e2e.yml`:
+Add this workflow to `.github/workflows/cypress-e2e.yml`:
 
 ```yaml
 on: [push, pull_request]
+
 jobs:
   cypress-e2e:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Run Cypress E2E with Slack Notification
-        uses: ./
+      - name: Cypress to Slack
+        uses: LeFedez/cypress-e2e-slack-reporter@v1.1.1
         with:
+          node-version: 18
+          cypress-command: npx cypress run --reporter mochawesome --reporter-options reportDir=cypress/results,overwrite=false,html=true,json=true
+          slack-username: Cy-Notify
+          slack-icon: https://cdn.sanity.io/images/o0o2tn5x/production/13b9c8412093e2f0cdb5495e1f59144967fa1664-512x512.jpg
+          slack-title: "*Cypress E2E Test Results*"
+          continue-on-cypress-error: true
           slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
-```
+✅ Requirements
+Node.js 18+
 
-**Requirements:**
-- Node.js 18+
-- Cypress & Mochawesome as dev dependencies
-- Slack webhook URL (as GitHub Secret)
+Cypress + Mochawesome as dev dependencies
 
----
+Slack Webhook URL stored as a GitHub Secret (SLACK_WEBHOOK)
 
-## Configuration
+⚙️ Configuration
+These are the main input options (action.yml contains the full list):
 
-Key inputs (see `action.yml` for all):
-- `slack-webhook` (**required**): Slack Incoming Webhook URL (GitHub Secret)
-- `node-version`: Node.js version (default: 18)
-- `cypress-command`: Custom Cypress run command
-- `slack-username`, `slack-icon`, `slack-title`: Customize Slack bot/message
-- `continue-on-cypress-error`: Continue workflow if tests fail (default: true)
+Input	Required	Description
+slack-webhook	✅	Slack Incoming Webhook URL (GitHub Secret)
+node-version	❌	Node.js version (default: 18)
+cypress-command	❌	Custom Cypress run command
+slack-username	❌	Display name for the Slack bot
+slack-icon	❌	Icon URL for the Slack bot
+slack-title	❌	Title for the Slack message
+continue-on-cypress-error	❌	Avoid failing the workflow if Cypress tests fail (default: true)
 
----
+🔔 Slack Notification
+After tests are executed, a summary is posted to Slack via rtCamp/action-slack-notify.
 
-## Slack Notification
+Includes:
+✅ Total, passed, failed, skipped, and pending tests
 
-After running your tests, this action posts a summary to Slack using [rtCamp/action-slack-notify](https://github.com/rtCamp/action-slack-notify). Example message includes:
+🔗 Link to the workflow run
 
-- Total, passed, failed, skipped, and pending tests
-- Workflow link
-- Customizable bot name, icon, and title
+🎨 Customizable bot name, icon, and message title
 
-**To enable:**
-1. Create a Slack Incoming Webhook and add it as `SLACK_WEBHOOK` secret.
-2. Optionally, set other inputs to personalize the notification.
+To enable:
+Create a Slack Incoming Webhook
 
----
+Add it to your GitHub repo as a secret named SLACK_WEBHOOK
 
-## Troubleshooting
-- Ensure `package-lock.json` exists for `npm ci`, or the action will use `npm install`.
-- Double-check your Slack webhook and GitHub Secret.
-- File upload to Slack is disabled by default for security.
-- Set `continue-on-cypress-error: true` to avoid workflow failure on test errors.
+(Optional) Customize the bot appearance using inputs
 
----
+📸 Example Notification
+Here’s an example of the Slack message you’ll receive after your Cypress tests run:
 
-## Advanced: Hashicorp Vault
+![Slack Notification Example](docs/slack-notification-br.png)
 
-You can retrieve the Slack webhook from Hashicorp Vault by setting `VAULT_ADDR` and `VAULT_TOKEN` as secrets. See [rtCamp/action-slack-notify docs](https://github.com/rtCamp/action-slack-notify#hashicorp-vault-optional) for details.
+🛠️ Troubleshooting
+If package-lock.json is missing, the action defaults to npm install instead of npm ci.
 
----
+Double-check that the SLACK_WEBHOOK secret is correctly defined.
 
-## Project Structure
-- `action.yml` – Action definition
-- `cypress/` – Cypress tests
-- `cypress.config.js` – Cypress config
-- `package.json` – Dependencies/scripts
+File uploads to Slack are disabled by default for security reasons.
 
-## License
-MIT
+Set continue-on-cypress-error: true to prevent workflow failure on test errors.
+
+📁 Project Structure
+bash
+Copiar
+Editar
+.
+├── .github/workflows/cypress-e2e.yml  # Example GitHub Action
+├── action.yml                         # Action definition
+├── cypress/                           # Cypress test files
+├── cypress.config.js                  # Cypress config
+└── package.json                       # Dev dependencies & scripts
+📝 License
+This project is licensed under the MIT License.
