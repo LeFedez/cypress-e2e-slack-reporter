@@ -1,4 +1,4 @@
-name: 'Cypress Tests Slack Notification'
+name: 'Cypress E2E Slack Notification'
 description: Runs Cypress E2E tests, generates Mochawesome reports, and sends detailed test results to Slack.
 author: 'LeFedez' 
 
